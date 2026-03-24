@@ -8331,6 +8331,14 @@ private:
 
     void cppKeywordInCSource() {
         ASSERT_NO_THROW(tokenizeAndStringify("int throw() {}", dinit(TokenizeOptions, $.cpp = false)));
+
+        const char code[] = "void requires(const char*);\n" // #14613
+                            "void f() { requires(\"abc\"); }\n";
+        ASSERT_NO_THROW(tokenizeAndStringify(code, dinit(TokenizeOptions, $.cpp = false)));
+        const Settings s_cpp17 = settingsBuilder().cpp(Standards::CPP17).build();
+        ASSERT_NO_THROW(tokenizeAndStringify(code, s_cpp17, true));
+        const Settings s_cpp20 = settingsBuilder().cpp(Standards::CPP20).build();
+        ASSERT_THROW_INTERNAL(tokenizeAndStringify(code, s_cpp20, true), AST);
     }
 
     void cppcast() {
