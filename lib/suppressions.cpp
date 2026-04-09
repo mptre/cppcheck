@@ -473,6 +473,7 @@ bool SuppressionList::isSuppressed(const SuppressionList::ErrorMessage &errmsg, 
 {
     std::lock_guard<std::mutex> lg(mSuppressionsSync);
 
+    // TODO: handle unmatchedPolyspaceSuppression?
     const bool unmatchedSuppression(errmsg.errorId == "unmatchedSuppression");
     bool returnValue = false;
     for (Suppression &s : mSuppressions) {
