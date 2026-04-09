@@ -2937,6 +2937,30 @@ private:
               "    return it;\n"
               "}\n");
         ASSERT_EQUALS("[test.cpp:3:44] -> [test.cpp:2:22] -> [test.cpp:4:12]: (error) Returning iterator to local container 'x' that will be invalid when returning. [returnDanglingLifetime]\n", errout_str());
+
+        check("void f(std::vector<int*>& m) {\n"
+              "    int x;\n"
+              "    m.push_back(&x);\n"
+              "}\n");
+        ASSERT_EQUALS("[test.cpp:3:17] -> [test.cpp:3:17] -> [test.cpp:2:9] -> [test.cpp:3:5]: (error) Non-local variable 'm' will use object that points to local variable 'x'. [danglingLifetime]\n", errout_str());
+
+        check("struct P {\n"
+              "    int h() const;\n"
+              "    int x;\n"
+              "    int& r;\n"
+              "};\n"
+              "int f(const P& p) {\n"
+              "    return p.h();\n"
+              "}\n"
+              "struct C {\n"
+              "    void g() {\n"
+              "        int i = 1;\n"
+              "        P q(m, i);\n"
+              "        f(q);\n"
+              "    }\n"
+              "    int m;\n"
+              "}\n");
+        ASSERT_EQUALS("", errout_str());
     }
 
     void danglingLifetimeContainerView()
