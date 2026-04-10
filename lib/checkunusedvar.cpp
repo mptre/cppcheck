@@ -738,7 +738,9 @@ void CheckUnusedVar::checkFunctionVariableUsage_iterateScopes(const Scope* const
             if (type == Variables::none || isPartOfClassStructUnion(i->typeStartToken()))
                 continue;
             const Token* defValTok = i->nameToken()->next();
-            if (Token::Match(i->nameToken()->previous(), "* %var% ) (")) // function pointer. Jump behind parameter list.
+            while (defValTok && defValTok->str() == "[")
+                defValTok = defValTok->link()->next();
+            if (Token::simpleMatch(defValTok, ") ("))
                 defValTok = defValTok->linkAt(1)->next();
             for (; defValTok; defValTok = defValTok->next()) {
                 if (defValTok->str() == "[")

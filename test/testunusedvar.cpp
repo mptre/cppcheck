@@ -7034,6 +7034,13 @@ private:
                               "    funcPtr();\n"
                               "}");
         ASSERT_EQUALS("", errout_str());
+
+        // #14661
+        functionVariableUsage("int main() {\n"
+                              "    void (*const funcPtr[])(void) = {x};\n"
+                              "    funcPtr[0]();\n"
+                              "}");
+        ASSERT_EQUALS("", errout_str());
     }
 
     void localvarAddr() { // #7747
